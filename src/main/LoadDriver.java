@@ -20,6 +20,9 @@ public class LoadDriver {
 	static JPanel panel;
 	public static String testString = "test";
 
+	public static String kolonne1;
+	public static String kolonne2;
+
 	public static void main(String[] args) {
 		try {
 			// The newInstance() call is a work around for some
@@ -31,7 +34,7 @@ public class LoadDriver {
 		}
 
 		connect();
-		sporring();
+		//sporring();
 		try
 		{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -44,33 +47,39 @@ public class LoadDriver {
 
 	}
 
-	public static Connection conn = null;
-	public static void connect(){
+	private static Connection conn = null;
+	private static void connect(){
 		try{
-			conn = DriverManager.getConnection("jdbc:mysql://mysql.stud.ntnu.no/renatbec_trening?user=renatbec_dbprosj&password=dberbest");
+			conn = DriverManager.getConnection("jdbc:mysql://mysql.stud.ntnu.no/renatbec_trening?user=renatbec_dbprosj&password=");
 		}catch (SQLException e){
 			e.printStackTrace();
 		}
 	}
 
-	public static Statement stmt = null;
-	public  static ResultSet rs = null;
+	private static Statement stmt = null;
+	private static ResultSet rs = null;
 
-	public static void sporring(){
+
+
+	public static void sporring(String query){
 		try{
 
 			stmt = conn.createStatement();
 
-			String query = "SELECT * FROM TRENINGSOKT";
+			//String query = "SELECT * FROM TRENINGSOKT";
+
 			if (stmt.execute(query)){
 
 				rs = stmt.getResultSet();
 			}
 
 			while (rs.next()){
-				String kolonne1 = rs.getString(1);
-				String kolonne2 = rs.getString(2);
-				System.out.println(kolonne1 + " - " + kolonne2);
+				kolonne1 = rs.getString(1);
+				kolonne2 = rs.getString(2);
+				//System.out.println(kolonne1 + " - " + kolonne2);
+				output.append(kolonne1 + " - " + kolonne2 + "\n");
+
+
 			}
 		}catch (SQLException e){
 			System.out.println("SQLException: " + e.getMessage());
@@ -80,7 +89,7 @@ public class LoadDriver {
 
 	public static void createFrame()
 	{
-		frame = new JFrame("Test");
+		frame = new JFrame("Database GUI");
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -122,7 +131,7 @@ public class LoadDriver {
 
 		public void actionPerformed(final ActionEvent ev)
 		{
-			if (!input.getText().trim().equals(""))
+		/*	if (!input.getText().trim().equals(""))
 			{
 				String cmd = ev.getActionCommand();
 				if (ENTER.equals(cmd))
@@ -130,6 +139,18 @@ public class LoadDriver {
 					output.append(input.getText());
 					if (input.getText().trim().equals(testString)) output.append(" = " + testString);
 					else output.append(" != " + testString);
+					output.append("\n");
+				}
+			}
+			input.setText("");
+			input.requestFocus();
+
+		*/
+
+			if (!input.getText().trim().equals("")){
+				String cmd = ev.getActionCommand();
+				if (ENTER.equals(cmd)){
+					sporring(input.getText());
 					output.append("\n");
 				}
 			}
