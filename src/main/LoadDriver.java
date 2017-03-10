@@ -5,9 +5,7 @@ import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 
 // Notice, do not import com.mysql.jdbc.*
 // or you will have problems!
@@ -32,7 +30,8 @@ public class LoadDriver {
 			// handle the error
 		}
 
-
+		connect();
+		sporring();
 		try
 		{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -44,6 +43,40 @@ public class LoadDriver {
 		createFrame();
 
 	}
+
+	public static Connection conn = null;
+	public static void connect(){
+		try{
+			conn = DriverManager.getConnection("jdbc:mysql://mysql.stud.ntnu.no/renatbec_trening?user=renatbec_dbprosj&password=dberbest");
+		}catch (SQLException e){
+			e.printStackTrace();
+		}
+	}
+
+	public static Statement stmt = null;
+	public  static ResultSet rs = null;
+
+	public static void sporring(){
+		try{
+
+			stmt = conn.createStatement();
+
+			String query = "SELECT * FROM TRENINGSOKT";
+			if (stmt.execute(query)){
+
+				rs = stmt.getResultSet();
+			}
+
+			while (rs.next()){
+				String kolonne1 = rs.getString(1);
+				String kolonne2 = rs.getString(2);
+				System.out.println(kolonne1 + " - " + kolonne2);
+			}
+		}catch (SQLException e){
+			System.out.println("SQLException: " + e.getMessage());
+		}
+	}
+
 
 	public static void createFrame()
 	{
