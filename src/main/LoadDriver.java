@@ -79,15 +79,59 @@ public class LoadDriver {
 
 			}
 
-			for (int i = 1; i <= rsmd.getColumnCount(); i++){
+			/*
+
+				VELGER IKKE ALLE KOLONNENE,
+
+			 */
+
+		/*	int count = 0;
+
+			for (int i = 1; i <= rsmd.getColumnCount(); ++i){
 				while (rs.next()) {
 					kolonne1 = rs.getString(i);
 					//kolonne2 = rs.getString(2);
 					//System.out.println(kolonne1 + " - " + kolonne2);
 					output.append(kolonne1  + "\n");
-			}
+
+					System.out.println("i = " + i);
+					count++;
+					System.out.println("Count = " + count);
+				}
 
 			}
+		*/
+				//NÆRMER SEG, BRUK EN TABELL FOR Å LEGGE KOLONNENE I, OG SÅ ITERER OVER HVAR AV DE MED rs.next() ????? //
+				int count = 1;
+				while (rs.next() && count <= rsmd.getColumnCount()) {
+					kolonne1 = rs.getString(count);
+					//kolonne2 = rs.getString(2);
+					//System.out.println(kolonne1 + " - " + kolonne2);
+					output.append(kolonne1  + "\n");
+
+					System.out.println("i = " + count);
+
+					count++;
+
+				}
+
+
+
+
+			/*
+			while (rs.next()) {
+
+				kolonne1 = rs.getString(1);
+				kolonne2 = rs.getString(2);
+				output.append(kolonne1 + " - " + kolonne2 + "\n");
+
+				//output.append(kolonne1  + "\n");
+
+
+			}
+			*/
+
+
 		}catch (SQLException e){
 			System.out.println("SQLException: " + e.getMessage());
 		}
@@ -97,6 +141,7 @@ public class LoadDriver {
 	public static void createFrame()
 	{
 		frame = new JFrame("Database GUI");
+		frame.setSize(1000, 1000);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -114,7 +159,6 @@ public class LoadDriver {
 		enterButton = new JButton("Enter");
 		enterButton.setActionCommand(ENTER);
 		enterButton.addActionListener(buttonListener);
-		// enterButton.setEnabled(false);
 		input.setActionCommand(ENTER);
 		input.addActionListener(buttonListener);
 		DefaultCaret caret = (DefaultCaret) output.getCaret();
@@ -126,10 +170,8 @@ public class LoadDriver {
 		frame.getContentPane().add(BorderLayout.CENTER, panel);
 		frame.pack();
 		frame.setLocationByPlatform(true);
-		// Center of screen
-		// frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
-		frame.setResizable(false);
+		frame.setResizable(true);
 		input.requestFocus();
 	}
 
