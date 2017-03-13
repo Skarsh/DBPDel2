@@ -50,7 +50,7 @@ public class LoadDriver {
 	private static Connection conn = null;
 	private static void connect(){
 		try{
-			conn = DriverManager.getConnection("jdbc:mysql://mysql.stud.ntnu.no/renatbec_trening?user=renatbec_dbprosj&password=");
+			conn = DriverManager.getConnection("jdbc:mysql://mysql.stud.ntnu.no/renatbec_trening?user=renatbec_dbprosj&password=dberbest");
 		}catch (SQLException e){
 			e.printStackTrace();
 		}
