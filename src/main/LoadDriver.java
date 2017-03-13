@@ -50,7 +50,7 @@ public class LoadDriver {
 	private static Connection conn = null;
 	private static void connect(){
 		try{
-			conn = DriverManager.getConnection("jdbc:mysql://mysql.stud.ntnu.no/renatbec_trening?user=renatbec_dbprosj&password=");
+			conn = DriverManager.getConnection("jdbc:mysql://mysql.stud.ntnu.no/renatbec_trening?user=renatbec_dbprosj&password=dberbest");
 		}catch (SQLException e){
 			e.printStackTrace();
 		}
@@ -58,6 +58,7 @@ public class LoadDriver {
 
 	private static Statement stmt = null;
 	private static ResultSet rs = null;
+	private static ResultSetMetaData rsmd = null;
 
 
 
@@ -71,14 +72,20 @@ public class LoadDriver {
 			if (stmt.execute(query)){
 
 				rs = stmt.getResultSet();
+
+				rsmd = rs.getMetaData();
+
+				System.out.println("Antall kolonner: " + rsmd.getColumnCount());
+
 			}
 
-			while (rs.next()){
-				kolonne1 = rs.getString(1);
-				kolonne2 = rs.getString(2);
-				//System.out.println(kolonne1 + " - " + kolonne2);
-				output.append(kolonne1 + " - " + kolonne2 + "\n");
-
+			for (int i = 1; i <= rsmd.getColumnCount(); i++){
+				while (rs.next()) {
+					kolonne1 = rs.getString(i);
+					//kolonne2 = rs.getString(2);
+					//System.out.println(kolonne1 + " - " + kolonne2);
+					output.append(kolonne1  + "\n");
+			}
 
 			}
 		}catch (SQLException e){
