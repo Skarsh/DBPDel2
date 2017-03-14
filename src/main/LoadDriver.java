@@ -140,22 +140,16 @@ public class LoadDriver {
 			}
 
 
-				//NÆRMER SEG, BRUK EN TABELL FOR Å LEGGE KOLONNENE I, OG SÅ ITERER OVER HVAR AV DE MED rs.next() ????? //
-			/*	int count = 1;
-				while (rs.next() && count <= rsmd.getColumnCount()) {
-					kolonne1 = rs.getString(count);
-					//kolonne2 = rs.getString(2);
-					//System.out.println(kolonne1 + " - " + kolonne2);
-					output.append(kolonne1  + "\n");
-
-					System.out.println("i = " + count);
-
-					count++;
-
-				}
-				*/
-
 		}catch (SQLException e){
+			System.out.println("SQLException: " + e.getMessage());
+		}
+	}
+
+	public static void insert(String query){
+		try {
+			stmt = conn.createStatement();
+			stmt.executeUpdate(query);
+		} catch (SQLException e) {
 			System.out.println("SQLException: " + e.getMessage());
 		}
 	}
@@ -223,6 +217,7 @@ public class LoadDriver {
 				String cmd = ev.getActionCommand();
 				if (ENTER.equals(cmd)){
 					sporring(input.getText());
+					insert(input.getText());		// FINN PÅ EN BEDRE MÅTE!! FÅR EXCEPTION //
 					output.append("\n");
 				}
 			}
