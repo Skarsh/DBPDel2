@@ -22,6 +22,8 @@ public class LoadDriver {
 
 	public static String kolonne1;
 	public static String kolonne2;
+	public static String kolonne3;
+	public static String kolonne4;
 
 	public static void main(String[] args) {
 		try {
@@ -66,7 +68,6 @@ public class LoadDriver {
 		try{
 
 			stmt = conn.createStatement();
-			ResultSetMetaData rsmd = rs.getMetaData();
 
 			//String query = "SELECT * FROM TRENINGSOKT";
 
@@ -103,8 +104,44 @@ public class LoadDriver {
 			}
 
 		*/
+
+		/*	int countTest = 0;
+			while (rs.next() && countTest < 2) {
+				kolonne1 = rs.getString(1);
+				System.out.println("Kolonne1");
+				kolonne2 = rs.getString(2);
+				System.out.println("Kolonne2");
+				kolonne3 = rs.getString(3);
+				System.out.println("Kolonne3");
+				kolonne4 = rs.getString(4);
+				System.out.println("Kolonne4");
+				output.append(kolonne1 + " - " + kolonne2 + " - " + kolonne3 + " - " + kolonne4 + "\n");
+
+				countTest++;
+
+				System.out.println(countTest);
+			}
+		*/
+			String kolonner [] = new String[rsmd.getColumnCount()];
+
+			int count = 0;
+
+			while(rs.next()){
+				for (String s : kolonner) {
+					kolonner[count] = rs.getString(count + 1);
+					if (count + 1 < rsmd.getColumnCount()) {
+						output.append(kolonner[count] + " - ");
+					} else {
+						output.append(kolonner[count] + "\n");
+					}
+					count++;
+				}
+				count = 0;
+			}
+
+
 				//NÆRMER SEG, BRUK EN TABELL FOR Å LEGGE KOLONNENE I, OG SÅ ITERER OVER HVAR AV DE MED rs.next() ????? //
-				int count = 1;
+			/*	int count = 1;
 				while (rs.next() && count <= rsmd.getColumnCount()) {
 					kolonne1 = rs.getString(count);
 					//kolonne2 = rs.getString(2);
@@ -116,6 +153,7 @@ public class LoadDriver {
 					count++;
 
 				}
+				*/
 
 		}catch (SQLException e){
 			System.out.println("SQLException: " + e.getMessage());
