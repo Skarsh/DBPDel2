@@ -65,6 +65,7 @@ public class LoadDriver {
 		try{
 
 			stmt = conn.createStatement();
+			ResultSetMetaData rsmd = rs.getMetaData();
 
 			//String query = "SELECT * FROM TRENINGSOKT";
 
@@ -72,13 +73,20 @@ public class LoadDriver {
 
 				rs = stmt.getResultSet();
 			}
-
+			int count = 1;
 			while (rs.next()){
-				kolonne1 = rs.getString(1);
-				kolonne2 = rs.getString(2);
+				//kolonne1 = rs.getString(1);
+				//kolonne2 = rs.getString(2);
 				//System.out.println(kolonne1 + " - " + kolonne2);
-				output.append(kolonne1 + " - " + kolonne2 + "\n");
+				//output.append(kolonne1 + " - " + kolonne2 + "\n");
 
+
+				kolonne1 = rs.getString(1);
+
+
+				output.append(kolonne1 + "\n");
+				System.out.println(rsmd.getColumnCount());
+				System.out.print("heihopp");
 
 			}
 		}catch (SQLException e){
