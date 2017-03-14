@@ -147,10 +147,17 @@ public class LoadDriver {
 
 	public static void insert(String query){
 		try {
+			String inputs[] = query.split("INSERT ")[1].split(", ");
+			String Date = inputs[0];
+			String Start = inputs[1];
+			String End = inputs[2];
+
 			stmt = conn.createStatement();
-			stmt.executeUpdate(query);
-		} catch (SQLException e) {
+			stmt.executeUpdate("INSERT INTO `TRENINGSOKT` (`dato`, `starttidspunkt`, `slutttidspunkt`) VALUES ( '"+ Date + "', '" + Start + "', '" + End + "')");
+
+		} catch (Exception e) {
 			System.out.println("SQLException: " + e.getMessage());
+			output.append("Make sure you write your input in the format 'INSERT YYYY-MM-DD, hh:mm:ss, hh:mm:ss'");
 		}
 	}
 
@@ -216,7 +223,7 @@ public class LoadDriver {
 			if (!input.getText().trim().equals("")){
 				String cmd = ev.getActionCommand();
 				if (ENTER.equals(cmd)){
-					sporring(input.getText());
+					//sporring(input.getText());
 					insert(input.getText());		// FINN PÅ EN BEDRE MÅTE!! FÅR EXCEPTION //
 					output.append("\n");
 				}
