@@ -47,6 +47,7 @@ public class LoadDriver {
 			ex.printStackTrace();
 		}
 		createFrame();
+		output.append("Skriv HJELP for hjelp.\n");
 
 	}
 
@@ -68,73 +69,13 @@ public class LoadDriver {
 	private static ArrayList<String> rad;
 	private static int rows = 0;
 
-	/*
-	public static ArrayList<String> sporring(String query){
-		try{
-
-			stmt = conn.createStatement();
-
-			//String query = "SELECT * FROM TRENINGSOKT";
-
-			if (stmt.execute(query)){
-
-				rs = stmt.getResultSet();
-
-				rsmd = rs.getMetaData();
-
-				System.out.println("Antall tabell: " + rsmd.getColumnCount());
-
-			}
-
-			/*
-			int count = 0;
-			String kols [] = new String[rsmd.getColumnCount()];
-
-			while(rs.next()){
-				for (String s : tabell) {
-					kols[count] = rs.getString(count + 1);
-					if (count + 1 < rsmd.getColumnCount()) {
-						output.append(kols[count] + " - ");
-					} else {
-						output.append(kols[count] + "\n");
-					}
-					count++;
-				}
-				count = 0;
-			}
-
-
-
-			tabell = new ArrayList<String>();
-
-			while(rs.next()){
-				for (int i = 0; i < rsmd.getColumnCount(); i++) {
-					tabell.add(rs.getString(i + 1));
-					if (i + 1 < rsmd.getColumnCount()) {
-						output.append(tabell.get(i) + " - ");
-					} else {
-						output.append(tabell.get(i) + "\n");
-					}
-
-				}
-				rows++;
-			}
-
-		}catch (SQLException e){
-			System.out.println("SQLException: " + e.getMessage());
-		}
-		printKolonner(tabell);
-		return tabell;
-	}
-
-	*/
 
 	public static ArrayList<ArrayList<String>> sporring(String query){
 		try{
 
 			stmt = conn.createStatement();
 
-			//String query = "SELECT * FROM TRENINGSOKT";
+			//String query = "SELECT notat FROM OVELSE";
 
 			if (stmt.execute(query)){
 
@@ -199,16 +140,8 @@ public class LoadDriver {
 		}
 	}
 
-	public void formatQuery(String command){
 
-		if (command.equals("HENT NOTAT")){
-			sporring("SELECT notat FROM OVELSE");
-		}
-
-
-	}
-
-	public static void getReport(String command){
+	public static void getReport(){
 
 		ArrayList<ArrayList<String>> queryTable = new ArrayList<ArrayList<String>>();
 
@@ -219,45 +152,63 @@ public class LoadDriver {
 		String startTidspunkt = "";
 		String sluttTidspunkt = "";
 
-		if (command.equals("HENT RAPPORT")){
-			queryTable = sporring("SELECT MAX(vekt) FROM STYRKE");
+		queryTable = sporring("SELECT MAX(vekt) FROM STYRKE");
 
-			//henter vekt
-			vekt = queryTable.get(0).get(0);
+		//henter vekt
+		vekt = queryTable.get(0).get(0);
 
-			// Henter besteOvelseId
-			queryTable = sporring("SELECT ovelse_ID FROM STYRKE WHERE vekt='" + vekt + "'");
-			besteOvelseId = queryTable.get(0).get(0);
+		// Henter besteOvelseId
+		queryTable = sporring("SELECT ovelse_ID FROM STYRKE WHERE vekt='" + vekt + "'");
+		besteOvelseId = queryTable.get(0).get(0);
 
-			// Henter besteTrening_Id
-			queryTable = sporring("SELECT trening_ID FROM OVELSE WHERE ovelse_ID ='" + besteOvelseId + "'" );
-			besteTreningId = queryTable.get(0).get(0);
+		// Henter besteTrening_Id
+		queryTable = sporring("SELECT trening_ID FROM OVELSE WHERE ovelse_ID ='" + besteOvelseId + "'" );
+		besteTreningId = queryTable.get(0).get(0);
 
-			// Henter dato
-			queryTable = sporring("SELECT DATO FROM TRENINGSOKT WHERE trening_ID ='" + besteTreningId + "'");
-			besteDato = queryTable.get(0).get(0);
+		// Henter dato
+		queryTable = sporring("SELECT DATO FROM TRENINGSOKT WHERE trening_ID ='" + besteTreningId + "'");
+		besteDato = queryTable.get(0).get(0);
 
-			// Henter start- og slutTidspunkt
-			queryTable = sporring("SELECT starttidspunkt, slutttidspunkt FROM TRENINGSOKT WHERE trening_ID ='" + besteTreningId + "'");
-			startTidspunkt = queryTable.get(0).get(0);
-			sluttTidspunkt = queryTable.get(0).get(1);
-
+		// Henter start- og slutTidspunkt
+		queryTable = sporring("SELECT starttidspunkt, slutttidspunkt FROM TRENINGSOKT WHERE trening_ID ='" + besteTreningId + "'");
+		startTidspunkt = queryTable.get(0).get(0);
+		sluttTidspunkt = queryTable.get(0).get(1);
 
 
-			System.out.println("vekt :" + " "  + vekt);
-			System.out.println("besteOvelseId :" + " "  + besteOvelseId);
-			System.out.println("besteTreningId : " + " " + besteTreningId);
-			System.out.println("besteDato : " + " " + besteDato);
+		System.out.println("vekt :" + " "  + vekt);
+		System.out.println("besteOvelseId :" + " "  + besteOvelseId);
+		System.out.println("besteTreningId : " + " " + besteTreningId);
+		System.out.println("besteDato : " + " " + besteDato);
 
-			output.append("TIDENES TRENINGSOKT" + "\n");
-			output.append("Vekt lÃ¸ftet: " + vekt + "kg" + "\n");
-			output.append("Dato : " + besteDato + "\n");
-			output.append("Startet kl : " + startTidspunkt + "\n");
-			output.append("Sluttet kl : " + sluttTidspunkt + "\n");
+		output.append("TIDENES TRENINGSOKT" + "\n");
+		output.append("Vekt lÃ¸ftet: " + vekt + "kg" + "\n");
+		output.append("Dato : " + besteDato + "\n");
+		output.append("Startet kl : " + startTidspunkt + "\n");
+		output.append("Sluttet kl : " + sluttTidspunkt + "\n");
+	}
+	
+	
+	public static void formatQuery(String query) {
+		if (query.equals("HENT RAPPORT")) {
+			getReport();
+		}else if (query.equals("HENT NOTAT")) {
+			//sikkert noe annet som skal inn her
+			sporring("SELECT notat FROM OVELSE");
+		}else if (query.split(" ")[0].equals("INSERT")) {
+			insert(query);
+		}else if (query.split(" ")[0].equals("SELECT")) {
+			sporring(query);
+		}else if (query.equals("HJELP")) {
+			output.append("KOMMANDOER:\n"
+					+ "HENT RAPPORT	Henter ut beste øvelsen fra den siste uken.\n"
+					+ "HENT NOTAT	Henter ut notater fra tidligere øvelser.\n"
+					+ "INSERT		Registrer en ny treningsokt på formatet YYYY-MM-DD, hh:mm:ss, hh:mm:ss.\n"
+					+ "Du kan også skrive inn dine egene sql spørringer ved hjelp av SELECT kommandoen.\n");
 		}
 	}
-	public static void createFrame()
-	{
+	
+	
+	public static void createFrame() {
 		frame = new JFrame("Database GUI");
 		frame.setSize(1000, 1000);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -302,11 +253,7 @@ public class LoadDriver {
 			if (!input.getText().trim().equals("")){
 				String cmd = ev.getActionCommand();
 				if (ENTER.equals(cmd)){
-					//sporring(input.getText());
-
-					getReport(input.getText());
-		//			insert(input.getText());		// FINN PÃ… EN BEDRE MÃ…TE!! FÃ…R EXCEPTION //
-
+					formatQuery(input.getText());
 					output.append("\n");
 				}
 			}
