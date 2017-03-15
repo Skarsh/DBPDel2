@@ -166,17 +166,18 @@ public class LoadDriver {
 
 
 	public static void printTabell(ArrayList<ArrayList<String>> tabell){
+		System.out.println(tabell.size());
 		for(int i = 0; i < tabell.size(); i++){
 			System.out.println("");
-			output.append("\n");
+			//output.append("\n");
 			for (int j = 0; j < tabell.get(i).size(); j++){
 				if ((j + 1) < tabell.get(i).size()) {
 					System.out.print(tabell.get(i).get(j) + " - ");
-					output.append(tabell.get(i).get(j) + " - ");
+					//output.append(tabell.get(i).get(j) + " - ");
 				}
 				else {
 					System.out.print(tabell.get(i).get(j));
-					output.append(tabell.get(i).get(j));
+					//output.append(tabell.get(i).get(j));
 				}
 			}
 		}
@@ -205,11 +206,47 @@ public class LoadDriver {
 		ArrayList<ArrayList<String>> queryTable = new ArrayList<ArrayList<String>>();
 
 		String vekt = "";
+		String besteOvelseId = "";
+		String besteTreningId = "";
+		String besteDato = "";
+		String startTidspunkt = "";
+		String sluttTidspunkt = "";
 
 		if (command.equals("HENT RAPPORT")){
 			queryTable = sporring("SELECT MAX(vekt) FROM STYRKE");
+
+			//henter vekt
 			vekt = queryTable.get(0).get(0);
-			System.out.println("vekt :" + vekt);
+
+			// Henter besteOvelseId
+			queryTable = sporring("SELECT ovelse_ID FROM STYRKE WHERE vekt='" + vekt + "'");
+			besteOvelseId = queryTable.get(0).get(0);
+
+			// Henter besteTrening_Id
+			queryTable = sporring("SELECT trening_ID FROM OVELSE WHERE ovelse_ID ='" + besteOvelseId + "'" );
+			besteTreningId = queryTable.get(0).get(0);
+
+			// Henter dato
+			queryTable = sporring("SELECT DATO FROM TRENINGSOKT WHERE trening_ID ='" + besteTreningId + "'");
+			besteDato = queryTable.get(0).get(0);
+
+			// Henter start- og slutTidspunkt
+			queryTable = sporring("SELECT starttidspunkt, slutttidspunkt FROM TRENINGSOKT WHERE trening_ID ='" + besteTreningId + "'");
+			startTidspunkt = queryTable.get(0).get(0);
+			sluttTidspunkt = queryTable.get(0).get(1);
+
+
+
+			System.out.println("vekt :" + " "  + vekt);
+			System.out.println("besteOvelseId :" + " "  + besteOvelseId);
+			System.out.println("besteTreningId : " + " " + besteTreningId);
+			System.out.println("besteDato : " + " " + besteDato);
+
+			output.append("TIDENES TRENINGSOKT" + "\n");
+			output.append("Vekt løftet: " + vekt + "kg" + "\n");
+			output.append("Dato : " + besteDato + "\n");
+			output.append("Startet kl : " + startTidspunkt + "\n");
+			output.append("Sluttet kl : " + sluttTidspunkt + "\n");
 		}
 	}
 	public static void createFrame()
@@ -258,7 +295,7 @@ public class LoadDriver {
 			if (!input.getText().trim().equals("")){
 				String cmd = ev.getActionCommand();
 				if (ENTER.equals(cmd)){
-					sporring(input.getText());
+					//sporring(input.getText());
 					getReport(input.getText());
 		//			insert(input.getText());		// FINN PÅ EN BEDRE MÅTE!! FÅR EXCEPTION //
 					output.append("\n");
