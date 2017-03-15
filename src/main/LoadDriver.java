@@ -63,8 +63,12 @@ public class LoadDriver {
 	private static ResultSet rs = null;
 	private static ResultSetMetaData rsmd = null;
 
-	private static ArrayList<String> kolonner;
 
+	private static ArrayList<ArrayList<String>> tabell;
+	private static ArrayList<String> rad;
+	private static int rows = 0;
+
+	/*
 	public static ArrayList<String> sporring(String query){
 		try{
 
@@ -78,7 +82,7 @@ public class LoadDriver {
 
 				rsmd = rs.getMetaData();
 
-				System.out.println("Antall kolonner: " + rsmd.getColumnCount());
+				System.out.println("Antall tabell: " + rsmd.getColumnCount());
 
 			}
 
@@ -87,7 +91,7 @@ public class LoadDriver {
 			String kols [] = new String[rsmd.getColumnCount()];
 
 			while(rs.next()){
-				for (String s : kolonner) {
+				for (String s : tabell) {
 					kols[count] = rs.getString(count + 1);
 					if (count + 1 < rsmd.getColumnCount()) {
 						output.append(kols[count] + " - ");
@@ -99,35 +103,82 @@ public class LoadDriver {
 				count = 0;
 			}
 
-			*/
 
-			kolonner = new ArrayList<String>();
+
+			tabell = new ArrayList<String>();
 
 			while(rs.next()){
 				for (int i = 0; i < rsmd.getColumnCount(); i++) {
-					kolonner.add(rs.getString(i + 1));
-				/*	if (i + 1 < rsmd.getColumnCount()) {
-						output.append(kolonner.get(i) + " - ");
+					tabell.add(rs.getString(i + 1));
+					if (i + 1 < rsmd.getColumnCount()) {
+						output.append(tabell.get(i) + " - ");
 					} else {
-						output.append(kolonner.get(i) + "\n");
+						output.append(tabell.get(i) + "\n");
 					}
-				*/
+
 				}
+				rows++;
 			}
 
 		}catch (SQLException e){
 			System.out.println("SQLException: " + e.getMessage());
 		}
-		printKolonner(kolonner);
-		return kolonner;
+		printKolonner(tabell);
+		return tabell;
 	}
 
-	public static void printKolonner(ArrayList<String> kol){
-		for (int i = 0; i < kol.size(); i++){
+	*/
 
-			if (rsmd.)
+	public static ArrayList<ArrayList<String>> sporring(String query){
+		try{
 
-			System.out.println(i);
+			stmt = conn.createStatement();
+
+			//String query = "SELECT * FROM TRENINGSOKT";
+
+			if (stmt.execute(query)){
+
+				rs = stmt.getResultSet();
+
+				rsmd = rs.getMetaData();
+
+				System.out.println("Antall tabell: " + rsmd.getColumnCount());
+
+			}
+
+			tabell = new ArrayList<ArrayList<String>>();
+
+			while(rs.next()){
+				rad = new ArrayList<String>();
+				for (int i = 0; i < rsmd.getColumnCount(); i++) {
+					rad.add(rs.getString(i + 1));
+				}
+				tabell.add(rad);
+			}
+
+
+		}catch (SQLException e){
+			System.out.println("SQLException: " + e.getMessage());
+		}
+		printTabell(tabell);
+		return tabell;
+	}
+
+
+	public static void printTabell(ArrayList<ArrayList<String>> tabell){
+		for(int i = 0; i < tabell.size(); i++){
+			System.out.println("");
+			output.append("\n");
+			for (int j = 0; j < tabell.get(i).size(); j++){
+				if ((j + 1) < tabell.get(i).size()) {
+					System.out.print(tabell.get(i).get(j) + " - ");
+					output.append(tabell.get(i).get(j) + " - ");
+				}
+				else {
+					System.out.print(tabell.get(i).get(j));
+					output.append(tabell.get(i).get(j));
+				}
+			}
 		}
 	}
 
@@ -149,12 +200,16 @@ public class LoadDriver {
 
 	}
 
-	public  void getReport(String command){
+	public static void getReport(String command){
 
-		ArrayList<String> vekt = new ArrayList<String>();
+		ArrayList<ArrayList<String>> queryTable = new ArrayList<ArrayList<String>>();
+
+		String vekt = "";
 
 		if (command.equals("HENT RAPPORT")){
-			vekt = sporring("SELECT MAX(vekt) FROM STYRKE");
+			queryTable = sporring("SELECT MAX(vekt) FROM STYRKE");
+			vekt = queryTable.get(0).get(0);
+			System.out.println("vekt :" + vekt);
 		}
 	}
 	public static void createFrame()
@@ -204,6 +259,7 @@ public class LoadDriver {
 				String cmd = ev.getActionCommand();
 				if (ENTER.equals(cmd)){
 					sporring(input.getText());
+					getReport(input.getText());
 		//			insert(input.getText());		// FINN PÅ EN BEDRE MÅTE!! FÅR EXCEPTION //
 					output.append("\n");
 				}
