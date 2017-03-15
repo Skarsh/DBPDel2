@@ -6,7 +6,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
-import java.util.ArrayList;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Date;
 
 // Notice, do not import com.mysql.jdbc.*
 // or you will have problems!
@@ -199,16 +202,35 @@ public class LoadDriver {
 		}
 	}
 
-	public void formatQuery(String command){
+	public static void getNotat(String command){
+		ArrayList<ArrayList<String>> queryTable = new ArrayList<ArrayList<String>>();
+
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Date date = new Date();
+		//System.out.println(dateFormat.format(date));
+
 
 		if (command.equals("HENT NOTAT")){
-			sporring("SELECT notat FROM OVELSE");
+			queryTable = sporring("SELECT * FROM TRENINGSOKT WHERE date > DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 7 DAY) AND date < CURRENT_TIMESTAMP");
+			for (ArrayList<String> tab : queryTable){
+				for (String s : tab){
+					System.out.println(s);
+				}
+			}
 		}
+	}
+
+	public static void getWeeklyReport(String command){
+
+		ArrayList<ArrayList<String>> queryTable = new ArrayList<ArrayList<String>>();
+
+
 
 
 	}
 
-	public static void getReport(String command){
+
+	public static void getBestReport(String command){
 
 		ArrayList<ArrayList<String>> queryTable = new ArrayList<ArrayList<String>>();
 
@@ -304,7 +326,9 @@ public class LoadDriver {
 				if (ENTER.equals(cmd)){
 					//sporring(input.getText());
 
-					getReport(input.getText());
+					getBestReport(input.getText());
+					getNotat(input.getText());
+
 		//			insert(input.getText());		// FINN PÅ EN BEDRE MÅTE!! FÅR EXCEPTION //
 
 					output.append("\n");
