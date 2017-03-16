@@ -22,12 +22,6 @@ public class LoadDriver {
 	public static JTextField input;
 	static JFrame frame;
 	static JPanel panel;
-	public static String testString = "test";
-
-	public static String kolonne1;
-	public static String kolonne2;
-	public static String kolonne3;
-	public static String kolonne4;
 
 	public static void main(String[] args) {
 		try {
@@ -40,7 +34,7 @@ public class LoadDriver {
 		}
 
 		connect();
-		//sporring();
+		//query();
 		try
 		{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -51,7 +45,6 @@ public class LoadDriver {
 		}
 		createFrame();
 		output.append("Skriv HJELP for hjelp.\n");
-
 	}
 
 	private static Connection conn = null;
@@ -67,18 +60,13 @@ public class LoadDriver {
 	private static ResultSet rs = null;
 	private static ResultSetMetaData rsmd = null;
 
-
-	private static ArrayList<ArrayList<String>> tabell;
+	private static ArrayList<ArrayList<String>> table;
 	private static ArrayList<String> rad;
-	private static int rows = 0;
 
-
-	public static ArrayList<ArrayList<String>> sporring(String query){
+	public static ArrayList<ArrayList<String>> query(String query){
 		try{
 
 			stmt = conn.createStatement();
-
-			//String query = "SELECT notat FROM OVELSE";
 
 			if (stmt.execute(query)){
 
@@ -86,42 +74,42 @@ public class LoadDriver {
 
 				rsmd = rs.getMetaData();
 
-				System.out.println("Antall tabell: " + rsmd.getColumnCount());
+				//System.out.println("Antall table: " + rsmd.getColumnCount());
 
 			}
 
-			tabell = new ArrayList<ArrayList<String>>();
+			table = new ArrayList<ArrayList<String>>();
 
 			while(rs.next()){
 				rad = new ArrayList<String>();
 				for (int i = 0; i < rsmd.getColumnCount(); i++) {
 					rad.add(rs.getString(i + 1));
 				}
-				tabell.add(rad);
+				table.add(rad);
 			}
 
 
 		}catch (SQLException e){
 			System.out.println("SQLException: " + e.getMessage());
 		}
-		printTabell(tabell);
-		return tabell;
+		printTable(table);
+		return table;
 	}
 
 
-	public static void printTabell(ArrayList<ArrayList<String>> tabell){
-		System.out.println(tabell.size());
-		for(int i = 0; i < tabell.size(); i++){
+	public static void printTable(ArrayList<ArrayList<String>> table){
+		System.out.println("Printing table:");
+		for(int i = 0; i < table.size(); i++){
 			System.out.println("");
 			//output.append("\n");
-			for (int j = 0; j < tabell.get(i).size(); j++){
-				if ((j + 1) < tabell.get(i).size()) {
-					System.out.print(tabell.get(i).get(j) + " - ");
-					//output.append(tabell.get(i).get(j) + " - ");
+			for (int j = 0; j < table.get(i).size(); j++){
+				if ((j + 1) < table.get(i).size()) {
+					System.out.print(table.get(i).get(j) + " - ");
+					//output.append(table.get(i).get(j) + " - ");
 				}
 				else {
-					System.out.print(tabell.get(i).get(j));
-					//output.append(tabell.get(i).get(j));
+					System.out.print(table.get(i).get(j));
+					//output.append(table.get(i).get(j));
 				}
 			}
 		}
@@ -143,23 +131,29 @@ public class LoadDriver {
 		}
 	}
 
-
-	public static void getNotat(String command){
+	public static void getNotat(){
 		ArrayList<ArrayList<String>> queryTable = new ArrayList<ArrayList<String>>();
 
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		Date date = new Date();
 		//System.out.println(dateFormat.format(date));
 
+		ArrayList<ArrayList<String>> exerciseInfo = new ArrayList<ArrayList<String>>();
+		ArrayList<ArrayList<String>> ovelseInfo = new ArrayList<ArrayList<String>>();
 
-		if (command.equals("HENT NOTAT")){
-			queryTable = sporring("SELECT * FROM TRENINGSOKT WHERE date > DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 7 DAY) AND date < CURRENT_TIMESTAMP");
-			for (ArrayList<String> tab : queryTable){
-				for (String s : tab){
-					System.out.println(s);
-				}
+
+
+		exerciseInfo = query("SELECT trening_ID, dato FROM TRENINGSOKT WHERE dato > DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 7 DAY) AND dato < CURRENT_TIMESTAMP");
+
+
+		//ovelseInfo = query("SELECT notat FROM OVELSE WHERE trening_ID = '" + );
+
+		for (ArrayList<String> tab : queryTable){
+			for (String s : tab){
+				output.append(s + "\n");
 			}
 		}
+
 	}
 
 
@@ -168,46 +162,46 @@ public class LoadDriver {
 
 		ArrayList<ArrayList<String>> queryTable = new ArrayList<ArrayList<String>>();
 
-		String vekt = "";
-		String besteOvelseId = "";
-		String besteTreningId = "";
-		String besteDato = "";
-		String startTidspunkt = "";
-		String sluttTidspunkt = "";
+		String weight;
+		String bestExerciseId;
+		String bestTrainingId;
+		String bestDato;
+		String startTime;
+		String endTime;
 
-		queryTable = sporring("SELECT MAX(vekt) FROM STYRKE");
+		queryTable = query("SELECT MAX(vekt) FROM STYRKE");
 
-		//henter vekt
-		vekt = queryTable.get(0).get(0);
+		//Henter vekt
+		weight = queryTable.get(0).get(0);
 
 		// Henter besteOvelseId
-		queryTable = sporring("SELECT ovelse_ID FROM STYRKE WHERE vekt='" + vekt + "'");
-		besteOvelseId = queryTable.get(0).get(0);
+		queryTable = query("SELECT ovelse_ID FROM STYRKE WHERE vekt='" + weight + "'");
+		bestExerciseId = queryTable.get(0).get(0);
 
 		// Henter besteTrening_Id
-		queryTable = sporring("SELECT trening_ID FROM OVELSE WHERE ovelse_ID ='" + besteOvelseId + "'" );
-		besteTreningId = queryTable.get(0).get(0);
+		queryTable = query("SELECT trening_ID FROM OVELSE WHERE ovelse_ID ='" + bestExerciseId + "'" );
+		bestTrainingId = queryTable.get(0).get(0);
 
 		// Henter dato
-		queryTable = sporring("SELECT DATO FROM TRENINGSOKT WHERE trening_ID ='" + besteTreningId + "'");
-		besteDato = queryTable.get(0).get(0);
+		queryTable = query("SELECT DATO FROM TRENINGSOKT WHERE trening_ID ='" + bestTrainingId + "'");
+		bestDato = queryTable.get(0).get(0);
 
 		// Henter start- og slutTidspunkt
-		queryTable = sporring("SELECT starttidspunkt, slutttidspunkt FROM TRENINGSOKT WHERE trening_ID ='" + besteTreningId + "'");
-		startTidspunkt = queryTable.get(0).get(0);
-		sluttTidspunkt = queryTable.get(0).get(1);
+		queryTable = query("SELECT starttidspunkt, slutttidspunkt FROM TRENINGSOKT WHERE trening_ID ='" + bestTrainingId + "'");
+		startTime = queryTable.get(0).get(0);
+		endTime = queryTable.get(0).get(1);
 
 
-		System.out.println("vekt :" + " "  + vekt);
-		System.out.println("besteOvelseId :" + " "  + besteOvelseId);
-		System.out.println("besteTreningId : " + " " + besteTreningId);
-		System.out.println("besteDato : " + " " + besteDato);
+		System.out.println("vekt :" + " "  + weight);
+		System.out.println("besteOvelseId :" + " "  + bestExerciseId);
+		System.out.println("besteTreningId : " + " " + bestTrainingId);
+		System.out.println("besteDato : " + " " + bestDato);
 
 		output.append("TIDENES TRENINGSOKT" + "\n");
-		output.append("Vekt løftet: " + vekt + "kg" + "\n");
-		output.append("Dato : " + besteDato + "\n");
-		output.append("Startet kl : " + startTidspunkt + "\n");
-		output.append("Sluttet kl : " + sluttTidspunkt + "\n");
+		output.append("Vekt løftet: " + weight + "kg" + "\n");
+		output.append("Dato : " + bestDato + "\n");
+		output.append("Startet kl : " + startTime + "\n");
+		output.append("Sluttet kl : " + endTime + "\n");
 	}
 	
 	
@@ -215,18 +209,17 @@ public class LoadDriver {
 		if (query.equals("HENT RAPPORT")) {
 			getReport();
 		}else if (query.equals("HENT NOTAT")) {
-			//sikkert noe annet som skal inn her
-			sporring("SELECT notat FROM OVELSE");
+			getNotat();
 		}else if (query.split(" ")[0].equals("INSERT")) {
 			insert(query);
 		}else if (query.split(" ")[0].equals("SELECT")) {
-			sporring(query);
+			query(query);
 		}else if (query.equals("HJELP")) {
 			output.append("KOMMANDOER:\n"
-					+ "HENT RAPPORT	Henter ut beste �velsen fra den siste uken.\n"
-					+ "HENT NOTAT	Henter ut notater fra tidligere �velser.\n"
-					+ "INSERT		Registrer en ny treningsokt p� formatet YYYY-MM-DD, hh:mm:ss, hh:mm:ss.\n"
-					+ "Du kan ogs� skrive inn dine egene sql sp�rringer ved hjelp av SELECT kommandoen.\n");
+					+ "HENT RAPPORT	Henter ut den beste øvelsen noensinne.\n"
+					+ "HENT NOTAT	Henter ut notater fra tidligere øvelser.\n"
+					+ "INSERT		Registrer en ny treningsokt på formatet YYYY-MM-DD, hh:mm:ss, hh:mm:ss.\n"
+					+ "Du kan også skrive inn dine egene sql spørringer ved hjelp av SELECT kommandoen.\n");
 		}
 	}
 	
