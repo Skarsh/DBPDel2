@@ -61,7 +61,7 @@ public class LoadDriver {
 	private static ResultSetMetaData rsmd = null;
 
 	private static ArrayList<ArrayList<String>> table;
-	private static ArrayList<String> rad;
+	private static ArrayList<String> row;
 
 	public static ArrayList<ArrayList<String>> query(String query){
 		try{
@@ -81,11 +81,11 @@ public class LoadDriver {
 			table = new ArrayList<ArrayList<String>>();
 
 			while(rs.next()){
-				rad = new ArrayList<String>();
+				row = new ArrayList<String>();
 				for (int i = 0; i < rsmd.getColumnCount(); i++) {
-					rad.add(rs.getString(i + 1));
+					row.add(rs.getString(i + 1));
 				}
-				table.add(rad);
+				table.add(row);
 			}
 
 
@@ -139,21 +139,39 @@ public class LoadDriver {
 		//System.out.println(dateFormat.format(date));
 
 		ArrayList<ArrayList<String>> exerciseInfo = new ArrayList<ArrayList<String>>();
-		ArrayList<ArrayList<String>> ovelseInfo = new ArrayList<ArrayList<String>>();
+		ArrayList<ArrayList<String>> notes = new ArrayList<ArrayList<String>>();
 
+		exerciseInfo = query("SELECT trening_ID, dato FROM TRENINGSOKT WHERE dato >= DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 7 DAY) AND dato <= CURRENT_TIMESTAMP");
 
+		String exerciseIds = "";
 
-		exerciseInfo = query("SELECT trening_ID, dato FROM TRENINGSOKT WHERE dato > DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 7 DAY) AND dato < CURRENT_TIMESTAMP");
-
-
-		//ovelseInfo = query("SELECT notat FROM OVELSE WHERE trening_ID = '" + );
-
-		for (ArrayList<String> tab : queryTable){
-			for (String s : tab){
-				output.append(s + "\n");
+		for (int i = 0; i < exerciseInfo.size(); i++){
+			if (i == 0){
+				exerciseIds += "(" + exerciseInfo.get(i).get(0) + ",";
 			}
+			else if (i + 1 < exerciseInfo.size()) {
+				exerciseIds += exerciseInfo.get(i).get(0) + ",";
+			}
+			else{
+				exerciseIds += exerciseInfo.get(i).get(0) + ")";
+			}
+
 		}
 
+		System.out.println();
+		System.out.println("Liste med notater:");
+		System.out.println(exerciseIds);
+
+		notes = query("SELECT notat FROM OVELSE WHERE trening_ID IN " + exerciseIds);
+
+		output.append("Notater fra treninger den siste uken" + "\n \n");
+		//output.append();
+
+		String exerciseDate = "";
+
+		for (int i = 0; i < notes.size(); i++){
+			output.append("Notat " + i + ": " + notes.get(i).get(0) + "\n");
+		}
 	}
 
 
@@ -203,8 +221,7 @@ public class LoadDriver {
 		output.append("Startet kl : " + startTime + "\n");
 		output.append("Sluttet kl : " + endTime + "\n");
 	}
-	
-	
+
 	public static void formatQuery(String query) {
 		if (query.equals("HENT RAPPORT")) {
 			getReport();
